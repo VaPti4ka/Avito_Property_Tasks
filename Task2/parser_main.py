@@ -48,7 +48,8 @@ class PropertyPage(Page):
     ALL_STATIONS_XPATH = "//label[@data-marker='metro-select-dialog/stations/item']/span/span"
     ALPHABETICALLY_STATION_SELECT_BUTTON = \
         (By.XPATH, "//button[@data-marker='metro-select-dialog/tabs/button(stations)']")
-    ALL_SELECTED_STATION_LOCATOR = (By.XPATH, '//div[@data-marker = "metro-select-dialog/chips"]/div[@]')
+    ALL_SELECTED_STATION_LOCATOR = \
+        (By.XPATH, '//div[@data-marker = "metro-select-dialog/chips"]/div[@class = "css-8yg80d"]')
 
     def __init__(self):
         super().__init__()
@@ -111,7 +112,8 @@ class PropertyPage(Page):
         self.press_elem(self.ALPHABETICALLY_STATION_SELECT_BUTTON)
         self.select_station(station_list)
 
-
+    def get_selected_stations(self):
+        return self.search_elems(self.ALL_SELECTED_STATION_LOCATOR)
 
 
 if __name__ == '__main__':

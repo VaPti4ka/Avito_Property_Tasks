@@ -45,17 +45,13 @@ class PropertyPage(Page):
     COMPLETE_STATION_LIST_BUTTON_LOCATOR = (By.XPATH, "//div[@data-marker = 'metro-select/withValue']")
     CONFIRM_STATION_SELECTION_BUTTON_LOCATOR = (By.XPATH, "//button[@data-marker = 'metro-select-dialog/apply']")
     EXIT_FROM_STATION_SELECTION_BUTTON_LOCATOR = (By.XPATH, "//button[@data-marker='metro-select-dialog/back']")
-    ALL_STATIONS_LOCATOR = (By.XPATH, "//label[@data-marker='metro-select-dialog/stations/item']/span/span")
+    ALL_STATIONS_XPATH = "//label[@data-marker='metro-select-dialog/stations/item']/span/span"
     ALPHABETICALLY_STATION_SELECT_BUTTON = \
         (By.XPATH, "//button[@data-marker='metro-select-dialog/tabs/button(stations)']")
+    ALL_SELECTED_STATION_LOCATOR = (By.XPATH, '//div[@data-marker = "metro-select-dialog/chips"]/div[@]')
 
     def __init__(self):
         super().__init__()
-
-        # Думаю, получить словать {"Название станции": "веб-элемент"} заранее выгоднее по времени,
-        # чем искать это каждый раз
-        self.stations = {}
-        self.get_stations_dict()
 
         self.load_page(self.PAGE_LINK)
 
@@ -70,17 +66,16 @@ class PropertyPage(Page):
         WebDriverWait(self.driver, 50).until(es.visibility_of_element_located(locator))
 
     def get_stations_dict(self):
-        self.load_page(self.PAGE_LINK)
-        self.open_settings()
-        self.open_empty_stations_option_list()
         self.push_alphabetically_button()
-        # Получаем список всех станций
-        stations = self.search_elems(self.ALL_STATIONS_LOCATOR)
+        stations = self.search_elems(self.ALL_STATIONS_XPATH)
 
+        stations_dict = {}
         # Пробегаемся по полученному списку, для каждой станции получаем название и добавляем в глобальный словарь
         for station in stations:
             station_label = station.text
-            self.stations[station_label] = station
+            stations_dict[station_label] = station
+
+        return stations_dict
 
     def open_settings(self):
         self.wait_element(self.SETTINGS_BUTTON_LOCATOR)
@@ -106,9 +101,10 @@ class PropertyPage(Page):
         self.wait_element(self.ALPHABETICALLY_STATION_SELECT_BUTTON)
 
     def select_station(self, stations_list):
-        # Надеемся, что будет посылаться корректный station_list, тк нет времени на обработку исключений
         for station in stations_list:
-            self.stations[station].click()
+            xpath = self.ALL_STATIONS_XPATH
+            xpath += '[contains(text(), "{station_name}")]'.format(station_name=station)
+            self.press_elem((By.XPATH, xpath))
 
     def select_station_for_alphabetically(self, station_list):
         self.wait_element(self.ALPHABETICALLY_STATION_SELECT_BUTTON)
@@ -116,10 +112,13 @@ class PropertyPage(Page):
         self.select_station(station_list)
 
 
+
+
 if __name__ == '__main__':
     case = PropertyPage()
     case.open_settings()
     case.open_empty_stations_option_list()
+    stations_a = case.get_stations_dict()
     # Чтобы окно само закрывалось через паузу
     time.sleep(20)
     case.driver.quit()

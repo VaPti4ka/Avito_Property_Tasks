@@ -52,6 +52,7 @@ class PropertyPage(Page):
     BY_LINES_STATION_SELECT_BUTTON = \
         (By.XPATH, '//button[@data-marker = "metro-select-dialog/tabs/button(lines)"]')
     DISCARD_BUTTON = (By.XPATH, "//button[@data-marker='metro-select-dialog/reset']")
+    METRO_SEARCH_FIELD_LOCATOR = (By.XPATH, '//input[@data-marker="metro-select-dialog/search"]')
 
     def __init__(self):
         super().__init__()
@@ -123,6 +124,15 @@ class PropertyPage(Page):
     def get_discard_button_status(self):
         button = self.search_elem(self.DISCARD_BUTTON)
         return button.is_enabled()
+
+    # request => ("1905", "Улица 1905 года") => (Текст для поиска, Искомый элемент)
+    def search_station(self, request):
+        search_field = self.search_elem(self.METRO_SEARCH_FIELD_LOCATOR)
+        search_field.click()
+        search_field.send_keys(request[0])
+
+        self.select_station([request[1]])
+
 
 
 if __name__ == '__main__':

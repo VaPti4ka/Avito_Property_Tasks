@@ -125,14 +125,11 @@ class PropertyPage(Page):
         button = self.search_elem(self.DISCARD_BUTTON)
         return button.is_enabled()
 
-    # request => ("1905", "Улица 1905 года") => (Текст для поиска, Искомый элемент)
     def search_station(self, request):
+        self.wait_element(self.METRO_SEARCH_FIELD_LOCATOR)
         search_field = self.search_elem(self.METRO_SEARCH_FIELD_LOCATOR)
         search_field.click()
-        search_field.send_keys(request[0])
-
-        self.select_station([request[1]])
-
+        search_field.send_keys(request)
 
 
 if __name__ == '__main__':

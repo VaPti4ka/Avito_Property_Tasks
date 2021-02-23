@@ -44,7 +44,7 @@ class PropertyPage(Page):
     EMPTY_STATION_LIST_BUTTON_LOCATOR = (By.XPATH, "//div[@data-marker = 'metro-select/withoutValue']")
     COMPLETE_STATION_LIST_BUTTON_LOCATOR = (By.XPATH, "//div[@data-marker = 'metro-select/withValue']")
     CONFIRM_STATION_SELECTION_BUTTON_LOCATOR = (By.XPATH, "//button[@data-marker = 'metro-select-dialog/apply']")
-    EXIT_FROM_STATION_SELECTION_BUTTON_LOCATOR = (By.XPATH, "//button[@data-marker='metro-select-dialog/back']")
+    EXIT_FROM_STATION_SELECTION_BUTTON_LOCATOR = (By.XPATH, "//div[@class='css-c98ymr']")
     ALL_STATIONS_XPATH = "//label[@data-marker='metro-select-dialog/stations/item']/span/span"
     ALPHABETICALLY_STATION_SELECT_BUTTON = \
         (By.XPATH, "//button[@data-marker='metro-select-dialog/tabs/button(stations)']")
@@ -53,6 +53,7 @@ class PropertyPage(Page):
         (By.XPATH, '//button[@data-marker = "metro-select-dialog/tabs/button(lines)"]')
     DISCARD_BUTTON = (By.XPATH, "//button[@data-marker='metro-select-dialog/reset']")
     METRO_SEARCH_FIELD_LOCATOR = (By.XPATH, '//input[@data-marker="metro-select-dialog/search"]')
+    METRO_SELECT_VALUE_LOCATOR = (By.XPATH, '//span[@data-marker = "metro-select/value"]')
 
     def __init__(self):
         super().__init__()
@@ -110,7 +111,7 @@ class PropertyPage(Page):
     def select_station(self, stations_list):
         for station in stations_list:
             xpath = self.ALL_STATIONS_XPATH
-            xpath += '[contains(text(), "{station_name}")]'.format(station_name=station)
+            xpath += '[contains(text(), \'{station_name}\')]'.format(station_name=station)
             self.press_elem((By.XPATH, xpath))
 
     def select_station_for_alphabetically(self, station_list):

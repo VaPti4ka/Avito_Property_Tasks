@@ -93,7 +93,35 @@ def test_search():
 
 
 def test_metro_select_field():
-    pass
+    station_list = ['Авиамоторная', 'Кузнецкий мост', 'Окская', 'Октябрьская', 'Петровский парк']
+    event = PropertyPage()
+    event.open_settings()
+
+    metro_stations = event.search_elems(event.METRO_SELECT_VALUE_LOCATOR)
+
+    # Станции не выбраны, ожидаемый результат - пустой список элементов
+    assert metro_stations == []
+
+    # Заходим в панель выбора станций, выбираем одну
+    event.open_empty_stations_option_list()
+    event.select_station_for_alphabetically(station_list[0:1])
+    # Возвращаемся на экран "Уточнить"
+    event.confirm_station_selection()
+
+    metro_stations = event.search_elems(event.METRO_SELECT_VALUE_LOCATOR)
+    # Проверка, в поле выбора станций должно отобразиться название выбранной странции
+    assert metro_stations[0].text == station_list[0]
+
+    # Повторяем для 3-х выбранных станций
+    event.open_complete_station_option_list()
+    event.press_elem(event.DISCARD_BUTTON)
+    event.select_station(station_list[0:3])
+    event.confirm_station_selection()
+
+    metro_stations = event.search_elems(event.METRO_SELECT_VALUE_LOCATOR)
+    assert ("Выбрано " in metro_stations[0].text) and (" станци" in metro_stations[0].text)
+
+    event.driver.quit()
 
 
 if __name__ == '__main__':
@@ -114,8 +142,8 @@ if __name__ == '__main__':
     # test_discard_button()
 
     # 5 При выборе станции через поисковую строку, поиск закрывается (выдается список всех станций)
-    test_search()
+    # test_search()
 
     # 6 На экране "Уточнить", примененный фильтр отображается с формулировкой "Выбрано n станций"
     # При выборе одной станции выводится ее название - считается правильным поведением
-    # test_metro_select_field()
+    test_metro_select_field()

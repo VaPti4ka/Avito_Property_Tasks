@@ -63,8 +63,10 @@ def test_discard_button():
     status = event.get_discard_button_status()
     assert status is False, 'Кнопка "Сбросить" активна, когда нет выбранных станций'
 
+    # Выбираем станцию
     event.select_station_for_alphabetically(['Коломенская'])
 
+    # Проверяем, появилась ли возможность нажать кнопку
     status = event.get_discard_button_status()
     assert status is True, 'Кнопка "Сбросить" не активна, когда ест выбранные странциии'
 
@@ -72,7 +74,22 @@ def test_discard_button():
 
 
 def test_search():
-    pass
+    event = PropertyPage()
+    event.open_settings()
+    event.open_empty_stations_option_list()
+
+    # Ищем станцию через строку поиска
+    station_request = "1905"
+    event.search_station(station_request)
+    search_field = event.search_elem(event.METRO_SEARCH_FIELD_LOCATOR)
+    assert search_field.get_attribute('value') == station_request, \
+        'Поле для поисковой фразы пустое, должно содержать "{}"'.format(station_request)
+
+    event.select_station(["Улица 1905 года"])
+    value = event.search_elem(event.METRO_SEARCH_FIELD_LOCATOR).get_attribute('value')
+    assert value == "", 'Поле для поисковой фразы не пустое'
+
+    event.driver.quit()
 
 
 def test_metro_select_field():
@@ -94,10 +111,10 @@ if __name__ == '__main__':
 
     # 4 Кнопка "Сбросить" появляется только при выбранных станциях
     # Кнопка есть всегда, критерий приема изменен на "Кнопка активируется..."
-    test_discard_button()
+    # test_discard_button()
 
     # 5 При выборе станции через поисковую строку, поиск закрывается (выдается список всех станций)
-    # test_search()
+    test_search()
 
     # 6 На экране "Уточнить", примененный фильтр отображается с формулировкой "Выбрано n станций"
     # При выборе одной станции выводится ее название - считается правильным поведением

@@ -51,6 +51,7 @@ class PropertyPage(Page):
     ALL_SELECTED_STATION_LOCATOR = (By.XPATH, '//div[@class = "css-8yg80d"]')
     BY_LINES_STATION_SELECT_BUTTON = \
         (By.XPATH, '//button[@data-marker = "metro-select-dialog/tabs/button(lines)"]')
+    DISCARD_BUTTON = (By.XPATH, "//button[@data-marker='metro-select-dialog/reset']")
 
     def __init__(self):
         super().__init__()
@@ -118,6 +119,10 @@ class PropertyPage(Page):
 
     def get_selected_stations(self):
         return [station.text for station in self.search_elems(self.ALL_SELECTED_STATION_LOCATOR)]
+
+    def get_discard_button_status(self):
+        button = self.search_elem(self.DISCARD_BUTTON)
+        return button.is_enabled()
 
 
 if __name__ == '__main__':

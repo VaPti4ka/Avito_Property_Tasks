@@ -12,7 +12,7 @@ class Page:
         """
             Фичу проверяем в мобильной версии, для этого настраиваем
         """
-        # Указываем с какого девайся просматривается сайт
+        # Указываем с какого девайса просматривается сайт
         mobile_emulation = {"deviceName": "iPhone X"}
         # Говорим о том, что будем использовать мобильную версию
         chrome_options = webdriver.ChromeOptions()
@@ -48,8 +48,9 @@ class PropertyPage(Page):
     ALL_STATIONS_XPATH = "//label[@data-marker='metro-select-dialog/stations/item']/span/span"
     ALPHABETICALLY_STATION_SELECT_BUTTON = \
         (By.XPATH, "//button[@data-marker='metro-select-dialog/tabs/button(stations)']")
-    ALL_SELECTED_STATION_LOCATOR = \
-        (By.XPATH, '//div[@data-marker = "metro-select-dialog/chips"]/div[@class = "css-8yg80d"]')
+    ALL_SELECTED_STATION_LOCATOR = (By.XPATH, '//div[@class = "css-8yg80d"]')
+    BY_LINES_STATION_SELECT_BUTTON = \
+        (By.XPATH, '//button[@data-marker = "metro-select-dialog/tabs/button(lines)"]')
 
     def __init__(self):
         super().__init__()
@@ -101,6 +102,9 @@ class PropertyPage(Page):
     def push_alphabetically_button(self):
         self.wait_element(self.ALPHABETICALLY_STATION_SELECT_BUTTON)
 
+    def push_by_lines_button(self):
+        self.wait_element(self.BY_LINES_STATION_SELECT_BUTTON)
+
     def select_station(self, stations_list):
         for station in stations_list:
             xpath = self.ALL_STATIONS_XPATH
@@ -113,14 +117,17 @@ class PropertyPage(Page):
         self.select_station(station_list)
 
     def get_selected_stations(self):
-        return self.search_elems(self.ALL_SELECTED_STATION_LOCATOR)
+        return [station.text for station in self.search_elems(self.ALL_SELECTED_STATION_LOCATOR)]
 
 
 if __name__ == '__main__':
     case = PropertyPage()
     case.open_settings()
     case.open_empty_stations_option_list()
-    stations_a = case.get_stations_dict()
-    # Чтобы окно само закрывалось через паузу
+    stations = ['Деловой центр (МЦК)', 'Международная', 'Улица академика Янгеля']
+    case.select_station_for_alphabetically(stations)
+    selected_stations = case.get_selected_stations()
+    pass
+
     time.sleep(20)
     case.driver.quit()

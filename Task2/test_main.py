@@ -51,7 +51,22 @@ def test_alphabetic_by_lines_switch():
 
 
 def test_select_in_lines():
-    pass
+    event = PropertyPage()
+    event.open_settings()
+    event.open_empty_stations_option_list()
+
+    # Выбираем станции в алфавитном списке
+    stations = ['Деловой центр (МЦК)']
+    event.select_station_for_alphabetically(stations)
+
+    # Переключаемся на список по линиям и проверяем, что окрытых линий нет
+    event.push_by_lines_button()
+    assert len(event.search_elems(event.ALL_LINES_EXPANDED_XPATH)) == 0, "Есть раскрытые списки по линиям"
+
+    # Проверяем, что выбранные станции сохранились
+    assert event.get_selected_stations() == stations, "Выбранные станции не совпадают с заданными"
+
+    event.driver.quit()
 
 
 def test_discard_button():
@@ -85,7 +100,7 @@ def test_search():
     assert search_field.get_attribute('value') == station_request, \
         'Поле для поисковой фразы пустое, должно содержать "{}"'.format(station_request)
 
-    event.select_station(["Улица 1905 года"])
+    event.select_station(["Улица 1905 года"], event.ALL_STATIONS_XPATH)
     value = event.search_elem(event.METRO_SEARCH_FIELD_LOCATOR).get_attribute('value')
     assert value == "", 'Поле для поисковой фразы не пустое'
 
@@ -115,7 +130,7 @@ def test_metro_select_field():
     # Повторяем для 3-х выбранных станций
     event.open_complete_station_option_list()
     event.press_elem(event.DISCARD_BUTTON)
-    event.select_station(station_list[0:3])
+    event.select_station(station_list[0:3], event.ALL_STATIONS_XPATH)
     event.confirm_station_selection()
 
     metro_stations = event.search_elems(event.METRO_SELECT_VALUE_LOCATOR)
@@ -135,7 +150,7 @@ if __name__ == '__main__':
     # test_select_station_button()
 
     # 3 При выборе станции из алфавитного списка, выбор дублируется внутри линии, при этом линия не разворачивается
-    # test_select_in_lines()
+    test_select_in_lines()
 
     # 4 Кнопка "Сбросить" появляется только при выбранных станциях
     # Кнопка есть всегда, критерий приема изменен на "Кнопка активируется..."
@@ -146,4 +161,11 @@ if __name__ == '__main__':
 
     # 6 На экране "Уточнить", примененный фильтр отображается с формулировкой "Выбрано n станций"
     # При выборе одной станции выводится ее название - считается правильным поведением
-    test_metro_select_field()
+    # test_metro_select_field()
+
+    # TODO Кусок для end-to-end сценария
+    # station_request = [
+    #     ('Калининско-Солнцевская', ('Шоссе Энтузиастов', 'Перово', 'Новогиреево', 'Новокосино')),
+    #     ('МКЖД', ('Соколиная гора', 'Андроновка'))
+    # ]
+    # event.select_station_by_lines(station_request)

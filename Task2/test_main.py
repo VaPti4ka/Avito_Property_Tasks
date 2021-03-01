@@ -1,4 +1,4 @@
-# import pytest
+import pytest
 from parser_main import PropertyPage
 
 
@@ -121,7 +121,7 @@ def test_metro_select_field():
     event.open_empty_stations_option_list()
     event.select_station_for_alphabetically(station_list[0:1])
     # Возвращаемся на экран "Уточнить"
-    event.confirm_station_selection()
+    event.push_confirm_station_button()
 
     metro_stations = event.search_elems(event.METRO_SELECT_VALUE_LOCATOR)
     # Проверка, в поле выбора станций должно отобразиться название выбранной странции
@@ -131,7 +131,7 @@ def test_metro_select_field():
     event.open_complete_station_option_list()
     event.press_elem(event.DISCARD_BUTTON)
     event.select_station(station_list[0:3], event.ALL_STATIONS_XPATH)
-    event.confirm_station_selection()
+    event.push_confirm_station_button()
 
     metro_stations = event.search_elems(event.METRO_SELECT_VALUE_LOCATOR)
     assert ("Выбрано " in metro_stations[0].text) and (" станци" in metro_stations[0].text)
@@ -139,33 +139,27 @@ def test_metro_select_field():
     event.driver.quit()
 
 
+def test_case_find_lefortovo_ads():
+    stations = ['Таганская', 'Марксистская', 'Китай-город', 'Новокузнецкая', 'Третьяковская']
+
+    event = PropertyPage()
+    event.open_settings()
+    event.open_empty_stations_option_list()
+
+    # Выбрали станции
+    event.select_station_for_alphabetically(stations)
+    # Подтвердили выбор станций
+    event.push_confirm_station_button()
+    # Подтвердили настройки, попадаем на страницу результатов поиска
+    event.push_confirm_setting_button()
+
+    ad_stations_list = event.get_station_of_ad()
+
+    for station_name in ad_stations_list:
+        assert station_name in stations
+
+    event.driver.quit()
+
+
 if __name__ == '__main__':
-    """
-        6 тестов - проверка критериев приема от PO
-    """
-    # 1 Переключение между выбором по-алфавиту и по-линии не сбрасывает выбор
-    # test_alphabetic_by_lines_switch()
-
-    # 2 При выборе станций снизу выезжает плавающая кнопка "Выбрать N станций"
-    # test_select_station_button()
-
-    # 3 При выборе станции из алфавитного списка, выбор дублируется внутри линии, при этом линия не разворачивается
-    test_select_in_lines()
-
-    # 4 Кнопка "Сбросить" появляется только при выбранных станциях
-    # Кнопка есть всегда, критерий приема изменен на "Кнопка активируется..."
-    # test_discard_button()
-
-    # 5 При выборе станции через поисковую строку, поиск закрывается (выдается список всех станций)
-    # test_search()
-
-    # 6 На экране "Уточнить", примененный фильтр отображается с формулировкой "Выбрано n станций"
-    # При выборе одной станции выводится ее название - считается правильным поведением
-    # test_metro_select_field()
-
-    # TODO Кусок для end-to-end сценария
-    # station_request = [
-    #     ('Калининско-Солнцевская', ('Шоссе Энтузиастов', 'Перово', 'Новогиреево', 'Новокосино')),
-    #     ('МКЖД', ('Соколиная гора', 'Андроновка'))
-    # ]
-    # event.select_station_by_lines(station_request)
+    pass

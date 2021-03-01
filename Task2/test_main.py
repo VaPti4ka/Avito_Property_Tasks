@@ -61,7 +61,7 @@ def test_select_in_lines():
 
     # Переключаемся на список по линиям и проверяем, что окрытых линий нет
     event.push_by_lines_button()
-    assert len(event.search_elems(event.ALL_LINES_EXPANDED_XPATH)) == 0, "Есть раскрытые списки по линиям"
+    assert len(event.search_elems(event.ALL_LINES_EXPANDED_LOCATOR)) == 0, "Есть раскрытые списки по линиям"
 
     # Проверяем, что выбранные станции сохранились
     assert event.get_selected_stations() == stations, "Выбранные станции не совпадают с заданными"
@@ -100,7 +100,7 @@ def test_search():
     assert search_field.get_attribute('value') == station_request, \
         'Поле для поисковой фразы пустое, должно содержать "{}"'.format(station_request)
 
-    event.select_station(["Улица 1905 года"], event.ALL_STATIONS_XPATH)
+    event.select_station(["Улица 1905 года"], event.ALL_STATIONS_LOCATOR)
     value = event.search_elem(event.METRO_SEARCH_FIELD_LOCATOR).get_attribute('value')
     assert value == "", 'Поле для поисковой фразы не пустое'
 
@@ -130,7 +130,7 @@ def test_metro_select_field():
     # Повторяем для 3-х выбранных станций
     event.open_complete_station_option_list()
     event.press_elem(event.DISCARD_BUTTON)
-    event.select_station(station_list[0:3], event.ALL_STATIONS_XPATH)
+    event.select_station(station_list[0:3], event.ALL_STATIONS_LOCATOR)
     event.push_confirm_station_button()
 
     metro_stations = event.search_elems(event.METRO_SELECT_VALUE_LOCATOR)
